@@ -15,6 +15,7 @@ fun main() {
 //    sort(::shellSort, "希尔")
 //    sort(::mergeSort, "归并")
     sort(::quickSort, "快速", 5)
+//    sort(::quickSort2, "快速2")
 //    perform(times = 5000, length = 1000)
 }
 
@@ -36,6 +37,7 @@ fun perform(times: Int = 1000, length: Int = 1000) {
     perform(arrays.deepCopyOf(), ::shellSort, "希尔")
     perform(arrays.deepCopyOf(), ::mergeSort, "归并")
     perform(arrays.deepCopyOf(), ::quickSort, "快速")
+    perform(arrays.deepCopyOf(), ::quickSort2, "快速2")
 }
 
 // 测试给定排序方法应用在给定数组上的耗时
@@ -175,7 +177,7 @@ fun merge(a: IntArray, l: Int, m: Int, r: Int, ta: IntArray) {
 }
 
 /**
- * 快速：选定一个元素，将数组中大于它的放到它的右边，小于它的放到它的左边，再对左右两边进行同样的递归
+ * 快排：选定一个元素，将数组中大于它的放到它的右边，小于它的放到它的左边，再对左右两边进行同样的递归
  */
 fun quickSort(a: IntArray) {
     quickSort(a, 0, a.size - 1)
@@ -204,6 +206,40 @@ fun partition(a: IntArray, l: Int, r: Int): Int {
     // 将pivot换到中间
     swap(a, i, r)
     return i
+}
+
+/**
+ * 快排2：递归思想不变。使用双指针，在一趟快排中减少交换次数，提高效率
+ * 缺点是难以理解或人脑调试，特别是在特殊情况、循环退出等场景
+ */
+fun quickSort2(a: IntArray) {
+    quickSort2(a, 0, a.size - 1)
+}
+
+fun quickSort2(a: IntArray, left: Int, right: Int) {
+    if (left >= right) return
+
+    // 选择第一个数作为哨兵
+    val pivot = a[left]
+    // 左右指针向中间逼近
+    var i = left
+    var j = right
+
+    while (i < j) {
+        // 右指针跳过所有大于pivot的数
+        while (a[j] >= pivot && i < j) j--
+        // 此时a[j]<pivot，填到i的坑里
+        a[i] = a[j]
+        // 左指针跳过所有小于pivot的数
+        while (a[i] <= pivot && i < j) i++
+        // 此时a[i]>pivot，填到j的坑里
+        a[j] = a[i]
+    }
+    // 循环结束时i还是坑着的，把pivot填进去
+    a[i] = pivot
+
+    quickSort2(a, left, i - 1)
+    quickSort2(a, i + 1, right)
 }
 
 //-------------------下面是辅助函数-------------------
