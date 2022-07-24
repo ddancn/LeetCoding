@@ -15,7 +15,7 @@ fun main() {
 //    sort(::shellSort, "希尔")
 //    sort(::mergeSort, "归并")
     sort(::quickSort, "快速", 5)
-//    sort(::quickSort2, "快速2")
+//    sort(::quickSort2, "双轴快速")
 //    perform(times = 5000, length = 1000)
 }
 
@@ -37,7 +37,7 @@ fun perform(times: Int = 1000, length: Int = 1000) {
     perform(arrays.deepCopyOf(), ::shellSort, "希尔")
     perform(arrays.deepCopyOf(), ::mergeSort, "归并")
     perform(arrays.deepCopyOf(), ::quickSort, "快速")
-    perform(arrays.deepCopyOf(), ::quickSort2, "快速2")
+    perform(arrays.deepCopyOf(), ::quickSort2, "双轴快速")
 }
 
 // 测试给定排序方法应用在给定数组上的耗时
@@ -133,7 +133,7 @@ fun shellSort(a: IntArray) {
         for (i in h until n) {
             val value = a[i]
             var j = i - h
-            while (j >= h) {
+            while (j >= 0) {
                 if (a[j] > value) a[j + h] = a[j]
                 else break
                 j -= h
@@ -148,6 +148,7 @@ fun shellSort(a: IntArray) {
 /**
  * 归并：将数组平分成两个部分，通过递归使其分别有序（递归到长度等于1自然有序），再将前后两部分有序数组合并起来
  * 合并过程需要用到一个临时数组。将其作为参数传递重复使用，可以减少递归每层申请和释放数组的开销
+ * 有办法不用临时数组吗？会很麻烦，无法在On时间内实现
  */
 fun mergeSort(a: IntArray) {
     mergeSort(a, 0, a.size - 1, IntArray(a.size))
@@ -155,7 +156,7 @@ fun mergeSort(a: IntArray) {
 
 fun mergeSort(a: IntArray, l: Int, r: Int, ta: IntArray) {
     if (l >= r) return
-    val m = (l + r) / 2
+    val m = l + (r - l) / 2
     mergeSort(a, l, m, ta)
     mergeSort(a, m + 1, r, ta)
     merge(a, l, m, r, ta)
@@ -209,7 +210,7 @@ fun partition(a: IntArray, l: Int, r: Int): Int {
 }
 
 /**
- * 快排2：递归思想不变。使用双指针，在一趟快排中减少交换次数，提高效率
+ * 双轴快排：递归思想不变。使用双指针，在一趟快排中减少交换次数，提高效率
  * 缺点是难以理解或人脑调试，特别是在特殊情况、循环退出等场景
  */
 fun quickSort2(a: IntArray) {
@@ -257,5 +258,5 @@ fun swap(a: IntArray, i: Int, j: Int) {
 // toString
 fun IntArray.me() = "[${joinToString(separator = ", ")}]"
 
-// 数据的深拷贝，为了让不同的排序方法使用上同样的数组
+// 二维数据的深拷贝，为了让不同的排序方法使用上同样的数组
 fun Array<IntArray>.deepCopyOf(): Array<IntArray> = Array(size) { n -> IntArray(this[n].size) { i -> this[n][i] } }
